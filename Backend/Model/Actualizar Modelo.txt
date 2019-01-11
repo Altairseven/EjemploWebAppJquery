@@ -1,0 +1,33 @@
+﻿
+1. Ejecutar El siguiente Comando desde Git Bash, o desde Cmd, estando parado en la carpeta del proyecto Model (cd ./EjemploWebApp/Model):
+
+
+
+dotnet ef dbcontext scaffold -c "EmpresaDbContext" "server=<HOST>;database=<DATABASE NAME>;user=<DB_USER>;pwd=<DB_PASSWORD>; ;SslMode=none;convert zero datetime=true;" Pomelo.EntityFrameworkCore.MySql -o Entities -f --use-database-names
+
+2. Una vez que termine de generar el modelo, hay q abrir el archivo EmpresasDbContext.cs y reemplazar el metodo ENTERO "OnConfiguring" por:
+
+public static string ConnectionString { get; set; }
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+        optionsBuilder.UseMySql(ConnectionString);
+}
+
+3. Guardar los cambios en EmpresasDbContext.cs
+
+
+Expllicacion: Lo que pegamos arriba es .. la definicion de una propiedad para Guardar el string de conexion, y la configuracion para que ande con mysql, 
+Desafortunadamente.. cada vez q se actualize el modelo hay q hacer esto, xq el archivo del modelo se regenera de Cero.
+
+Sin embargo.. el string de conexion.. por mas que tuvimos q ponerlo para regenerarlo.. no queda guardado por aca.. 
+hay q guardarlo en la appsettings.json del proyecto del api.
+
+
+Nostros lo que ejecutamos es el Api, el api en su propio arranque.. va a invocar al Modelo del proyecto Model. y le va a insertar el string de conexion.
+
+El modelo esta separado en otro proyecto por 1 Razon.
+Si se esta programando algo por la mitad.. y el proyecto api no compila, xq todavia no se termino de tocar.. y descubris q tenes que agregar un campo en una tabla
+hay q actualizar el modelo.
+y si api no compila.. el modelo no te deja actualizarlo
+el proyecto que contiene el modelo debe poder compilar...
+por eso lo separamos.. 
+si api no compila.. no importa.. xq model si compila, y nos deja actualizar el modelo, que vamos a despues utilizarlo desde api.

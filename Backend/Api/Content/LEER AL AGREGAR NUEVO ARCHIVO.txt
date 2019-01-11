@@ -1,0 +1,13 @@
+Si no es algo que se compila, pero si que se usa, como un report html, o css, o una imagen, hay q poner para que
+se copie al compilar
+
+(Click secundario en el archivo > propiedades > Copy to Output Directory > Copy if Newer)
+
+
+Experimento:
+
+copy $(ProjectDir)Content\ReportTemplates $(OutDir)Content\ReportTemplates |
+copy $(ProjectDir)Content\CSSs $(OutDir)Content\CSS
+
+El posta:
+xcopy $(ProjectDir)Content $(OutDir)Content /S /Y

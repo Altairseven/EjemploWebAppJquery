@@ -1,0 +1,20 @@
+
+@using Api.EntidadesExtendidas
+@model IEnumerable<ClientesEntity>
+
+<h1>Listado de Clientes</h1>
+
+<table>
+
+    <tr><th>Nombre</th><th>Apellido</th><th>Documento</th></tr>
+    @{
+        foreach (var item in Model) {
+            <tr>
+                <td>@item.Nombre</td>
+                <td>@item.Apellido</td>
+                <td width="200">@item.Nro_Documento</td>
+            </tr>
+        }
+    }
+</table>
+

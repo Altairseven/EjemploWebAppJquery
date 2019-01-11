@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Clientes - Formulario</title>
+    <link rel="stylesheet" type="text/css" href="../libs/css/bootstrap.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../libs/css/sweetalert2.min.css">
+    <script src="../libs/js/jquery-3.3.1.js"></script>
+    <script src="../libs/js/popper.js"></script>
+    <script src="../libs/js/bootstrap.js"></script>
+    <script src="../libs/js/sweetalert2.min.js"></script>
+    <script src="../scripts/main.js"></script>
+    <script src="../scripts/CustomFunctions.js"></script>
+    <style>
+  
+    </style>
+</head>
+<body>
+    <div class="container mt-1">
+  
+            <h1><span id="TitleLabel">Nuevo Cliente </span><span class="Loading d-none"> <i class="fas fa-spinner fa-pulse"></i></span></h1>
+ 
+  
+        <form #FormCliente>
+            <div class="form-group form-row">
+                <!-- hiddenInput -->
+                <input type="hidden" name="ID" id="ID" value=0>
+
+                <label for="" class="col-sm-1 col-form-label">Nombre:</label>
+                <div class="col-sm-5">
+                    <input type="text" id="Nombre" class="form-control" placeholder="Nombre">
+                </div>
+                <label for="" class="col-sm-1 col-form-label">Apellido:</label>
+                <div class="col-sm-5">
+                    <input type="text" id="Apellido" class="form-control" placeholder="Apellido">
+                </div>
+            </div>
+            <div class="form-group form-row">
+                <label for="" class="col-sm-1 col-form-label">Email:</label>
+                <div class="col-sm-5">
+                    <input type="email" id="Email" class="form-control"  placeholder="Email">
+                </div>
+                <label for="" class="col-sm-1 col-form-label">Telefono:</label>
+                <div class="col-sm-5">
+                    <input type="text" id="Telefono" class="form-control" placeholder="Telefono">
+                </div>
+            </div>
+            <div class="form-group form-row">
+                <label for="" class="col-sm-1 col-form-label">Documento:</label>
+                <div class="col-sm-2">
+                    <select type="text" id="ID_TipoDocumento" class="form-control"></select>
+                </div>
+                <div class="col-sm-3">
+                    <input type="text" id="Nro_Documento" class="form-control" placeholder="Nro Documento">
+                </div>
+            </div>
+            <div class="form-group form-row">
+                <label for="" class="col-sm-1 col-form-label">Direccion:</label>
+                <div class="col-sm-2">
+                    <input type="text" id="Dir_Calle" class="form-control" placeholder="Calle">
+                </div>
+                <div class="col-sm-1">
+                    <input type="text" id="Dir_Numero" class="form-control" placeholder="Numero">
+                </div>
+                <div class="col-sm-1">
+                    <input type="text" id="Dir_Piso" class="form-control" placeholder="Piso">
+                </div>
+                <div class="col-sm-1">
+                    <input type="text" id="Dir_Dpto" class="form-control" placeholder="Depto">
+                </div>
+            </div>
+            <div class="form-group form-row text-right">
+                <div class="col-sm-12">
+                    <button type="button" id="SaveBtn" class="btn btn-primary" disabled><i class="fa fa-save"></i> Guardar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+
+
+
+    <script>
+
+        var FormularioClientes = {
+            Init(id){
+                //Este metodo deberia primero que nada llenar el select de tipos de documentos, con los posibles tipos que estan en la tabla de la db,
+                //y luego, en el caso de que estemos editando, traer los datos del cliente.
+
+                //el problema es que son 2 llamadas al api, y no deberiamos hacer la segunda hasta que la primera este completada.
+                //Entonces lo que podemos hacer es asegurarnos que terminamos con la primera, antes de hacer la segunda.
+                //ademas en la primera necesitamos llenar un select con los posibles valores, asi que para eso vamos a usar una funcion que esta en el main.js
+                //el then implica que la funcion devuelve una promesa, que es basicamente lo mismo que hace el ajax con el .done, 
+                //una forma de correr codigo cuando termino una tarea asyncronica 
+
+                //les sugiero que se pongan a leer sobre asyncronismo xq es super importante.
+                FeedSelect("TiposDocumento/GetList", $("#ID_TipoDocumento"), 0, true, "< Seleccione >").then((x)=>{
+                    //Lo que se ejectua adentro del bloque del then ocurre cuando se completo la funcion anterior.
+                    if(id != 0)
+                        FormularioClientes.FeedCliente(id)
+                    else
+                        $("#SaveBtn").prop('disabled',false);
+                })
+
+                //Uno podria encadenar funciones y ajax, pero puede hacer complicado a la lectura del codigo, 
+                //existen cosas como el async await para facilitar la sintaxis, pero primero tienen que entender como trabajar asyncronicamente antes de poder usarlo.
+
+
+
+            },
+            FeedCliente(id){
+                $("#TitleLabel").html("Cargando Cliente N° " + id)
+                $(".Loading").removeClass('d-none');
+                $("#SaveBtn").prop('disabled',true);
+                $.ajax({
+                    url: _SetUrl('Clientes/GetClienteById?id=' + id),
+                    method: "GET",
+                    beforeSend: _setHeader
+                }).done((x)=>{
+                    console.log(x)
+                    $("#TitleLabel").html("Formulario Cliente N° " + id)
+                    $(".Loading").addClass('d-none');
+                    $("#SaveBtn").prop('disabled',false);
+                    //como los inputs son elementos html con id, generan un objeto al cual se puede acceder solamente con el nombre
+                    //tambien se podrian Asignar con $("#Nombre").val("x.Nombre"), pero esto es mas rapido, y mas limpio, 
+                    //Pero ojo con declarar propiedades con el mismo nombre que los inputs, xq reemplaza esos objetos(no el input, solo la referencia)
+                    //Esto es un error super comun, y hay que tratar de evitarlo. 
+                    ID.value = x.ID;
+                    Nombre.value = x.Nombre;
+                    Apellido.value = x.Apellido;
+                    Email.value = x.Email;
+                    Telefono.value = x.Telefono;
+                    ID_TipoDocumento.value = x.ID_TipoDocumento;
+                    Nro_Documento.value = x.Nro_Documento;
+                    Dir_Calle.value = x.Dir_Calle;
+                    Dir_Numero.value = x.Dir_Numer;
+                    Dir_Piso.value = x.Dir_Piso;
+                    Dir_Dpto.value = x.Dir_Dpto;
+
+                }).fail(x=>{
+                    console.log(x)
+                    _handle401(x)
+                    alert("Se produjo un error inesperado al cargar el registro");
+                })
+            },
+            OnSubmit:$("#SaveBtn").click(x=>{
+                FormularioClientes.Guardar();
+            }),
+            Guardar(){
+                debugger;
+                //Armo Un Objeto para el Post:
+
+                let Objeto = {
+                    ID: ID.value,
+                    Nombre: Nombre.value,
+                    Apellido: Apellido.value,
+                    Email: Email.value,
+                    ID_TipoDocumento: ID_TipoDocumento.value,
+                    Nro_Documento: Nro_Documento.value,
+                    Telefono: Telefono.value,
+                    Dir_Calle: Dir_Calle.value,
+                    Dir_Numer: Dir_Numero.value,
+                    Dir_Piso: Dir_Piso.value,
+                    Dir_Dpto: Dir_Dpto.value,
+                }
+                
+                //Validaciones:
+
+                if(!Nombre){
+                    alert("El Nombre no puede estar vacio");
+                }
+                if(!Apellido){
+                    alert("El Apellido no puede estar vacio");
+                }
+                if(!ID_TipoDocumento){
+                    alert("El Tipo de Documento no puede estar vacio");
+                }
+                //y asi sucesivamente....
+
+
+                //cuando esten todas las validaciones, hay que preguntarle al usuario si quiere guardar, para eso tenemos una libreria
+                //de dialogos que esta bastante buena, SweetAlert2, Documentacion en: https://sweetalert2.github.io/#examples
+
+                let URL = _SetUrl("Clientes/Update");
+                if(Objeto.ID == 0)
+                    URL = _SetUrl("Clientes/Create");
+
+
+                Swal({
+                    title: 'Desea Guardar los cambios',
+                    type: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Confirmar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.value) { //Si se apreto que si:
+                        
+                        $.ajax({
+                            url: URL,
+                            method: "POST",
+                            contentType:'application/json',
+                            data: JSON.stringify(Objeto),
+                            beforeSend: _setHeader
+                        }).then(x=>{
+                            debugger;
+
+                            window.location = "./Clientes.html"
+
+                        }).fail(x=>{
+                            _handle401(x)
+                            debugger;
+                        })
+
+
+
+                    }
+                })
+
+
+
+
+            }
+        }
+        
+
+        //el document ready es como el windows.onload, se ejecuta cuadno termina de cargar la pagina, lo ideal es que
+        //se declare todo como arriba, y las funciones que setean estados iniciales se llamen desde aca.
+        $(document).ready((e)=>{
+            //La funcion GetParamsByCurrentUrl agarra todos los parametros que se les hayan pasado a la url actual
+            //ej.... formulario?ID=1&Nombre="culo" => devuelve Parametros ={ ID: 1, Nombre:'Culo'};
+            let Parametros = GetParamsByCurrentUrl();
+
+            FormularioClientes.Init(Parametros.id);
+
+            //LLena el Select de Tipo de Documento
+
+
+
+        });
+
+    </script>
+
+
+</body>
+</html>

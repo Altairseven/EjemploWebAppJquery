@@ -1,0 +1,61 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/dist
+/dist-server
+/tmp
+/out-tsc
+
+# dependencies
+/FrontEnd/node_modules
+/FrontEnd/dist
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+Backend/.vs/*
+.vs/*
+Backend/Api/.vs/*
+Backend/Api/bin/*
+Backend/Api/obj/*
+#Guarda el string de conexion, no puede estar en el repo
+#Backend\Api\appsettings.json
+
+Backend/Models/.vs/*
+Backend/Models/bin/*
+Backend/Models/obj/*
+
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# e2e
+/e2e/*.js
+/e2e/*.map
+
+# System Files
+.DS_Store
+Thumbs.db
+obj
+bin
+
+

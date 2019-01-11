@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="./libs/css/bootstrap.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="./libs/css/sweetalert2.min.css">
+    <script src="./libs/js/jquery-3.3.1.js"></script>
+    <script src="./libs/js/popper.js"></script>
+    <script src="./libs/js/bootstrap.js"></script>
+    <script src="./libs/js/sweetalert2.min.js"></script>
+    <script src="./scripts/main.js"></script>
+    <script src="./scripts/CustomFunctions.js"></script>
+    
+</head>
+<body>
+    <h1>Index</h1>
+    <hr>
+    <button id="ejemploabm" class="btn btn-sm btn-primary">Ejemplo ABM</button>
+    <button id="logout" class="btn btn-sm btn-primary">cerrar sesion</button>
+
+    <script>
+
+        $("#ejemploabm").click(()=>{
+            window.location = "./Clientes/clientes.html";
+        })
+        $("#logout").click(()=>{
+            _killSession();
+        })
+
+        $(document).ready((e)=>{
+            //Document Ready es como el windows.onload = function(){};
+            //se ejecuta cuando se termina de cargar toda la pagina y deberia ser usado para llamar a funciones que se tengan que ejecutar automaticamente.
+            //no llamarlas desde afuera.
+
+
+            //si el login es invalido, Osea si en localstorage no hay nada, o si el token expiro, redirige al login.
+            //en las demas paginas estaria bueno ponerlo pero no es necesario.. no van a funcionar de por si si el token no pasa por el backend
+            if(!_isLoggedIn())
+                window.location = "./login.html";
+
+        })
+        
+    </script>
+    
+</body>
+</html>
